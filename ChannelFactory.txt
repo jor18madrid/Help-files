@@ -1,0 +1,1 @@
+        private ChannelFactory<ITGR1_RECIBO_INTERFACE> myChannelFactory = new ChannelFactory<ITGR1_RECIBO_INTERFACE>(new BasicHttpBinding(), new EndpointAddress("--Aqui va la conexion con el service--"));
