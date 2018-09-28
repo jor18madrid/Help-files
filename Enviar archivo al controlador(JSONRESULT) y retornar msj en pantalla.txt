@@ -1,0 +1,66 @@
+<script>
+
+
+    function Upload() {
+        var form = $('formulario')[0];
+        var formdata = new FormData(form);
+        var fileInput = document.getElementById('btnUploadFile').files.length;
+        for (i = 0; i < fileInput; i++) {
+            var file = document.getElementById("btnUploadFile").files[i];
+            formdata.append("btnUploadFile", file);
+        }
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/HomeUt/Upload');//Controlador/Metodo        
+        xhr.send(formdata);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                alert(xhr.responseText);
+            }
+        }
+        return false;
+    }
+<script/>
+
+
+//html
+
+<span><input id="btnUploadFile" type="file" class="form-control-file" /></span>
+<span><input id="btnCargar" type="submit" value="Cargar" class="btn btn-primary" onclick="Upload()" /></span>
+           
+//
+
+//Controlador
+   [HttpPost]
+        public JsonResult Upload()
+        {
+            
+            if (Request.Files.Count != 0)
+            {
+                
+                //for (int i = 0; i < Request.Files.Count; i++)
+                //{
+                    HttpPostedFileBase file = Request.Files[0];
+                    int fileSize = file.ContentLength;
+                    string fileName = file.FileName;
+                    string mimeType = file.ContentType;
+                    System.IO.Stream fileContent = file.InputStream;
+                    //To save file, use SaveAs method
+                    var jsonPath = HttpContext.Server.MapPath("~/");
+                    var currentDirectory = Path.Combine(jsonPath + "JsonUserTest\\" + fileName);
+                    file.SaveAs(currentDirectory); //File will be saved in application root
+                //}
+                string[] jsonString = System.IO.File.ReadAllLines(currentDirectory);
+                var dataToView =  new GenerarJson().getDataToView(jsonString[0]);
+                return Json("Uploaded " + Request.Files.Count + " files");
+
+            }
+            else 
+            {
+                return Json("Seleccione un archivo");
+            }
+
+
+
+        }
+     
+//
