@@ -1,0 +1,37 @@
+Class
+///////////////////////////////////////////////////////////////////////////////
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RGL.MAPPERS
+{
+    public static class AuxMapper<T>
+    {
+        public static T MapObject(object Source, object Destination)
+        {
+            Type destinationType = Destination.GetType();
+            var sourceProperties = Source.GetType().GetProperties();
+            var destiationProperties = destinationType.GetProperties();
+            var commonProperties = from sp in Source.GetType().GetProperties()
+                                   join dp in destiationProperties on new { sp.Name, sp.PropertyType }
+                                   equals new { dp.Name, dp.PropertyType }
+                                   select new { sp, dp };
+            foreach (var item in commonProperties)
+            {
+                item.dp.SetValue(Destination, item.sp.GetValue(Source, null), null);
+            }
+            return (T)Convert.ChangeType(Destination, typeof(T));
+        }
+
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+Lst.Add(AuxMapper<AuxAprobadosDto>.MapObject(item, new AuxAprobadosDto()));
+///////////////////////////////////////////////////////////////////////////////
+
